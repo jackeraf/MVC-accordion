@@ -1,0 +1,89 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Accordion</title>
+
+  <link rel="stylesheet" href="./styles.css">
+
+</head>
+
+<body onload="controller.init()">
+
+  <div class="accordion-game"></div>
+   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.24.0/babel.js"></script>  
+  <script>
+    
+    const model = {
+      sections: []
+    }
+
+    const view = {
+      accordionsDtElements: document.getElementsByClassName("Accordion-dt"),
+      init(){
+        this.viewSections()
+        this.addListeners()
+      },
+      viewSections(){
+        const accordionGameDiv = document.getElementsByClassName("accordion-game")
+        accordionGameDiv[0].innerHTML += controller.arraySections.join("");
+      },
+      addListeners(){
+        for(let j = 0; j < this.accordionsDtElements.length; j += 1){
+          this.accordionsDtElements[j].addEventListener("click", event => this.toggleSections(event));
+        }
+      },
+      toggleSections(event){
+        for(let index = 0; index < this.accordionsDtElements.length; index += 1){
+
+          if(this.areSectionsDisplayed(index)){
+            this.hideRestOfSections(index);
+          } else {
+            controller.updateClickedElement(event.target.nextElementSibling)
+            controller.getCurrentClickedElement().style.display = this.isClickedSectionDisplayed() ? "none" : "block";
+          }
+        }
+      },
+      isClickedSectionDisplayed(){
+        return controller.getCurrentClickedElement().style.display === "block";
+      },
+      areSectionsDisplayed(index){
+        return this.accordionsDtElements[index] !== event.target;
+      },
+      hideRestOfSections(index){
+        this.accordionsDtElements[index].nextElementSibling.style.display = "none";
+      }
+    }
+
+    const controller = {
+      arraySections: model.sections,
+      numberOfSections: 3,
+      clickedPanelElement: null,
+      init(){
+        return this.createSections()
+        .then (()=> view.init())
+      },
+      getCurrentClickedElement(){
+        return this.clickedPanelElement;
+      },
+      updateClickedElement(panel){
+        return this.clickedPanelElement = panel;
+      },
+      createSections(){
+        return new Promise((resolve, reject)=>{
+          let section;
+          for(let i = 1; i < this.numberOfSections +1; i +=1){
+            section = `<div><dt class='Accordion-dt' style='display:block' >Section ${i} </dt><dd class='Accordion-panel' style='display: none'><p >Section ${i} Content...</p></dd></div>`;
+            this.arraySections.push(section)
+          }
+          resolve()
+        })
+      }
+    }
+    
+  </script>
+</body>
+</html>
